@@ -104,6 +104,10 @@ static struct audio_amp_platform_data amp_platform_data =  {
 	.agc_compression_rate = AGC_COMPRESIION_RATE,
 	.agc_output_limiter_disable = AGC_OUTPUT_LIMITER_DISABLE,
 	.agc_fixed_gain = AGC_FIXED_GAIN,
+	.ATK_time = AGC_ATK_TIME,
+	.REL_time = AGC_REL_TIME,
+	.Hold_time = AGC_HOLD_TIME,
+	.Output_limit_level = AGC_OUTPUT_LIMIT_LEVEL,
 };
 #endif
 

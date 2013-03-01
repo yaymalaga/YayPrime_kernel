@@ -108,6 +108,8 @@ static struct audio_amp_platform_data amp_platform_data =  {
 	.REL_time = AGC_REL_TIME,
 	.Hold_time = AGC_HOLD_TIME,
 	.Output_limit_level = AGC_OUTPUT_LIMIT_LEVEL,
+	.Noise_Gate_Threshold = AGC_NOISE_GATE_THRESHOLD,
+	.AGC_Max_Gain = AGC_MAX_GAIN,
 };
 #endif
 

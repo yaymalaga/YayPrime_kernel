@@ -112,7 +112,11 @@
  * the changed user space value before blocking or is woken by a
  * concurrent waker:
  *
- * CPU 0                               CPU 1
+ * The correct serialization ensures that a waiter either observes
+ * the changed user space value before blocking or is woken by a
+ * concurrent waker:
+ *
+ * CPU 0                                 CPU 1
  * val = *futex;
  * sys_futex(WAIT, futex, val);
  *   futex_wait(futex, val);
@@ -487,7 +491,7 @@ again:
 		key->shared.pgoff = page_head->index;
 	}
 
-	get_futex_key_refs(key);
+	get_futex_key_refs(key); /* implies MB (B) */
 
 out:
 	unlock_page(page_head);

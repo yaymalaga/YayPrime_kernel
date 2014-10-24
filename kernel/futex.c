@@ -144,9 +144,10 @@
  *   else                                    wake_waiters(futex);
  *     waiters--; (b)                        unlock(hash_bucket(futex));
  *
- * Where (A) orders the waiters increment and the futex value read -- this
- * is guaranteed by the head counter in the hb spinlock; and where (B)
- * orders the write to futex and the waiters read.
+ * Where (A) orders the waiters increment and the futex value read through
+ * atomic operations (see hb_waiters_inc) and where (B) orders the write
+ * to futex and the waiters read -- this is done by the barriers for both
+ * shared and private futexes in get_futex_key_refs().
  *
  * This yields the following case (where X:=waiters, Y:=futex):
  *
@@ -347,13 +348,20 @@ static void get_futex_key_refs(union futex_key *key)
 		futex_get_mm(key); /* implies MB (B) */
 		break;
 	default:
+		/*
+		 * Private futexes do not hold reference on an inode or
+		 * mm, therefore the only purpose of calling get_futex_key_refs
+		 * is because we need the barrier for the lockless waiter check.
+		 */
 		smp_mb(); /* explicit MB (B) */
 	}
 }
 
 /*
  * Drop a reference to the resource addressed by a key.
- * The hash bucket spinlock must not be held.
+ * The hash bucket spinlock must not be held. This is
+ * a no-op for private futexes, see comment in the get
+ * counterpart.
  */
 static void drop_futex_key_refs(union futex_key *key)
 {
@@ -1454,15 +1462,9 @@ void requeue_pi_wake_futex(struct futex_q *q, union futex_key *key,
  * then direct futex_lock_pi_atomic() to force setting the FUTEX_WAITERS bit.
  * hb1 and hb2 must be held by the caller.
  *
-<<<<<<< HEAD
- * Returns:
- *  0 - failed to acquire the lock atomicly
- *  1 - acquired the lock
-=======
  * Return:
  *  0 - failed to acquire the lock atomically;
  * >0 - acquired the lock, return value is vpid of the top_waiter
->>>>>>> 866293e... futex: Add another early deadlock detection check
  * <0 - error
  */
 static int futex_proxy_trylock_atomic(u32 __user *pifutex,

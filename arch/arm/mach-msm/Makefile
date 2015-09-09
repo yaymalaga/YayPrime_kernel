@@ -387,6 +387,10 @@ obj-$(CONFIG_MSM_RPM_SMD) += rpm-smd.o
 obj-$(CONFIG_MSM_CPR) += msm_cpr.o
 obj-$(CONFIG_MSM_VP_REGULATOR) += msm_vp.o
 
+ifdef CONFIG_MSM_SLEEPER
+obj-$(CONFIG_MSM_SLEEPER) += msm-sleeper.o
+endif
+
 ifdef CONFIG_MSM_CPR
 obj-$(CONFIG_DEBUG_FS) += msm_cpr-debug.o
 endif
